@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<customer id="1">
+    <name>John Doe</name>
+    <phone>1234567890</phone>
+    <about>Lorem ipsum dolor sit amet</about>
+    <age>30</age>
+    <balance>1000.00</balance>
+    <active>true</active>
+    <joined>2023-06-08T12:34:56Z</joined>
+</customer>
+
