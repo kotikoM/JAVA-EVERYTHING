@@ -1,11 +1,9 @@
 import org.jdom2.*;
-import org.jdom2.filter.Filters;
 import org.jdom2.input.SAXBuilder;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
+import org.w3c.dom.Attr;
 
-import org.jaxen.*;
-
-import javax.xml.xpath.*;
-import javax.xml.xpath.XPath;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -15,11 +13,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ReadXMLWithJDOMandJAXEN {
+public class JDOMReader {
 
     private static final String XMLDATEFORMAT = "yyyy-MM-dd'T'HH:mm:ss";
 
-    private static List<Customer> getDataFromXML(String filename, String filter) throws DataConversionException, ParseException, XPathExpressionException {
+    public List<Customer> getDataFromXML(String filename) throws DataConversionException, ParseException {
         List<Customer> data = new ArrayList<>();
 
         File file = new File(filename);
@@ -35,14 +33,8 @@ public class ReadXMLWithJDOMandJAXEN {
         }
 
 
-//        Element root = doc.getRootElement();
-//        List<Element> custElements = root.getChildren("customer");
-
-        XPathFactory xPathFactory = XPathFactory.newInstance();
-        XPath xPath = xPathFactory.newXPath();
-        XPathExpression expression = xPath.compile(filter);
-
-        List<Element> custElements = (List<Element>) expression.evaluate(doc, XPathConstants.NODESET);
+        Element root = doc.getRootElement();
+        List<Element> custElements = root.getChildren("customer");
 
         for (Element ce : custElements) {
 
@@ -67,17 +59,5 @@ public class ReadXMLWithJDOMandJAXEN {
 
         return data;
 
-    }
-    public static void main(String[] args) throws ParseException, DataConversionException, XPathExpressionException {
-        JDOMReader reader = new JDOMReader();
-        List<Customer> data = getDataFromXML("out/result.xml",
-        "//customer[age >= 30]");
-        //double slash to search whole xml document then name of element to find
-        //then predicate that will be used as filter
-
-
-        for(Customer customer : data){
-            System.out.println(customer.toString());
-        }
     }
 }
