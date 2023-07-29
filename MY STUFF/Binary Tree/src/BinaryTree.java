@@ -1,6 +1,7 @@
 import java.util.List;
 import java.util.Objects;
 
+@SuppressWarnings("unused")
 public class BinaryTree {
     public Node root;
 
@@ -49,7 +50,7 @@ public class BinaryTree {
 
     public void delete(Integer value) {
 
-        if (value == root.getValue()) {
+        if (Objects.equals(value, root.getValue())) {
             if (root.getRightNode() == null && root.getLeftNode() == null) {
                 root = null;
                 return;
@@ -60,6 +61,12 @@ public class BinaryTree {
             } else if (root.getRightNode() == null && root.getLeftNode() != null) {
                 //only left tree
                 this.root = root.getLeftNode();
+                return;
+            } else {
+                //both children case
+                Integer newValue = root.getMin(root.getRightNode());
+                root.delete(root.getRightNode(), root, newValue);
+                root.setValue(newValue);
                 return;
             }
         }

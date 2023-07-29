@@ -15,16 +15,7 @@ public class Main {
         binaryTree.insert(-1);
         binaryTree.insert(5);
 
-        String s = binaryTree.prettyPrint();
-
-        System.out.println(binaryTree);
-
-
-
         System.out.println(binaryTree.prettyPrint());
 
-        binaryTree.delete(0);
-
-        System.out.println(binaryTree.prettyPrint());
     }
 }
