@@ -35,7 +35,7 @@ public class PrintableTreeImpl implements PrintableTree {
         return linesToString(lines);
     }
 
-    // Example:
+// Example:
 //                                       ┌1
 //                                    ┌11┤
 //                                    │  └100
@@ -44,25 +44,13 @@ public class PrintableTreeImpl implements PrintableTree {
 //                                    └200┤
 //                                        └2000
     private void toPrettyTree(Node node, List<StringBuilder> lines) {
-
         //insert the first tree element
         StringBuilder firstLine = new StringBuilder();
-        firstLine.append(node.value);
-
-        if (node.left != null && node.right != null) {
-            //goes both ways
-            firstLine.append("┤");
-        } else if (node.right == null) {
-            //go left-up
-            firstLine.append("┘");
-        } else {
-            //go right-down
-            firstLine.append("┐");
-        }
+        firstLine.append(node.value)
+                .append(getIndent(node));
 
         //add the first line
         lines.add(firstLine);
-
 
         //fill in left tree
         if (node.left != null) {
@@ -77,7 +65,6 @@ public class PrintableTreeImpl implements PrintableTree {
     }
 
     private void branchOutLeft(Node current, List<StringBuilder> lines, int brakes) {
-
         //align values correctly
         int spaces = lines.get(0).length() - 1;
 
@@ -92,16 +79,8 @@ public class PrintableTreeImpl implements PrintableTree {
         //add the corner and the value
         StringBuilder line = new StringBuilder();
         appendSpaces(line, spaces);
-        line.append("┌").append(current.value);
-
-        //add appropriate pipe
-        if (current.left != null && current.right != null) {
-            line.append("┤");
-        } else if (current.right == null && current.left != null) {
-            line.append("┘");
-        } else if (current.right != null) {
-            line.append("┐");
-        }
+        line.append("┌").append(current.value)
+                .append(getIndent(current));
 
         //add the line from behind
         lines.add(0, line);
@@ -118,7 +97,6 @@ public class PrintableTreeImpl implements PrintableTree {
             branchOutLeft(current.left, lines, (current.left.right == null) ? 0 : current.left.right.size());
             branchInRight(current, lines, (current.right.left == null) ? 0 : current.right.left.size());
         }
-
     }
 
     private void branchOutRight(Node current, List<StringBuilder> lines, int brakes) {
@@ -136,16 +114,8 @@ public class PrintableTreeImpl implements PrintableTree {
         //add the corner and the value
         StringBuilder line = new StringBuilder();
         appendSpaces(line, spaces);
-        line.append("└").append(current.value);
-
-        //add appropriate pipe
-        if (current.left != null && current.right != null) {
-            line.append("┤");
-        } else if (current.right == null && current.left != null) {
-            line.append("┘");
-        } else if (current.right != null) {
-            line.append("┐");
-        }
+        line.append("└").append(current.value)
+                .append(getIndent(current));
 
         //add the line in the front
         lines.add(line);
@@ -162,7 +132,6 @@ public class PrintableTreeImpl implements PrintableTree {
             branchOutRight(current.right, lines, (current.right.left == null) ? 0 : current.right.left.size());
             branchInLeft(current, lines, (current.left.right == null) ? 0 : current.left.right.size());
         }
-
     }
 
     private void branchInLeft(Node previous, List<StringBuilder> lines, int brakes) {
@@ -200,16 +169,7 @@ public class PrintableTreeImpl implements PrintableTree {
         index--;
         StringBuilder line = lines.get(index);
         appendSpaces(line, (lineLengthToMatch - line.length() - 1));
-        line.append("┌").append(leftValue);
-
-        //add appropriate corner
-        if (previous.left.right != null && previous.left.left != null) {
-            line.append("┤");
-        } else if (previous.left.right == null && previous.left.left != null) {
-            line.append("┘");
-        } else if (previous.left.right != null) {
-            line.append("┐");
-        }
+        line.append("┌").append(leftValue).append(getIndent(previous.left));
 
         //add the updated line
         lines.set(index, line);
@@ -263,16 +223,7 @@ public class PrintableTreeImpl implements PrintableTree {
         index++;
         StringBuilder line = lines.get(index);
         appendSpaces(line, (lineLengthToMatch - line.length() - 1));
-        line.append("└").append(rightValue);
-
-        //add appropriate corner
-        if (previous.right.left != null && previous.right.right != null) {
-            line.append("┤");
-        } else if (previous.right.right == null && previous.right.left != null) {
-            line.append("┘");
-        } else if (previous.right.right != null) {
-            line.append("┐");
-        }
+        line.append("└").append(rightValue).append(getIndent(previous.right));
 
         //add the updated line
         lines.set(index, line);
@@ -289,6 +240,21 @@ public class PrintableTreeImpl implements PrintableTree {
             branchInLeft(previous.right, lines, (previous.right.left.right == null) ? 0 : previous.right.left.right.size());
             branchInRight(previous.right, lines, (previous.right.right.left == null) ? 0 : previous.right.right.left.size());
         }
+    }
+
+    private String getIndent(Node node){
+        if (node.left != null && node.right != null) {
+            //goes both ways
+            return ("┤");
+        } else if (node.right == null && node.left!= null) {
+            //go left-up
+            return ("┘");
+        } else if (node.right != null) {
+            //go right-down
+            return ("┐");
+        }
+
+        return "";
     }
 
     private int extractValueFromLine(String line) {
@@ -337,9 +303,7 @@ public class PrintableTreeImpl implements PrintableTree {
     }
 
     private void appendSpaces(StringBuilder line, int count) {
-        for (int i = 0; i < count; i++) {
-            line.append(" ");
-        }
+        line.append(" ".repeat(Math.max(0, count)));
     }
 
     public String toString(Node current) {
@@ -361,7 +325,7 @@ public class PrintableTreeImpl implements PrintableTree {
 
         int[] elements2 = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, -1, -2, -3, -4, -5, -6, -7, -8, -9, -10};
 
-        for (int element : elements2) {
+        for (int element : elements1) {
             tree.add(element);
         }
 
