@@ -3,8 +3,15 @@ package com.epam.rd.autocode.bstprettyprint;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class PrintableTreeImpl implements PrintableTree {
 
+    private static final String STRAIGHT_PIPE = "│";
+    private static final String MIDDLE_PIPE = "┤";
+    private static final String BEFORE_LEFT_PIPE = "┌";
+    private static final String BEFORE_RIGHT_PIPE = "└";
+    private static final String AFTER_LEFT_PIPE = "┘";
+    private static final String AFTER_RIGHT_PIPE = "┐";
     private Node root;
 
     @Override
@@ -35,14 +42,14 @@ public class PrintableTreeImpl implements PrintableTree {
         return linesToString(lines);
     }
 
-// Example:
+    // Example:
 //                                       ┌1
 //                                    ┌11┤
 //                                    │  └100
 //                                 123┤
 //                                    │   ┌150
 //                                    └200┤
-//                                        └2000
+//                                        └2000s
     private void toPrettyTree(Node node, List<StringBuilder> lines) {
         //insert the first tree element
         StringBuilder firstLine = new StringBuilder();
@@ -54,242 +61,178 @@ public class PrintableTreeImpl implements PrintableTree {
 
         //fill in left tree
         if (node.left != null) {
-            branchOutLeft(node.left, lines, (node.left.right == null) ? 0 : node.left.right.size());
+            branchOutLeft(node.left, lines);
         }
 
         //fill in right tree
         if (node.right != null) {
-            branchOutRight(node.right, lines, (node.right.left == null) ? 0 : node.right.left.size());
+            branchOutRight(node.right, lines);
         }
 
     }
 
-    private void branchOutLeft(Node current, List<StringBuilder> lines, int brakes) {
+    private void branchOutLeft(Node currentNode, List<StringBuilder> lines){
         //align values correctly
         int spaces = lines.get(0).length() - 1;
+        int brakes = (isLeaf(currentNode.right)) ? 0 : size(currentNode.right);
 
         //add brakes "│"
         for (int i = 0; i < brakes; i++) {
             StringBuilder line = new StringBuilder();
             appendSpaces(line, spaces);
-            line.append("│");
+            line.append(STRAIGHT_PIPE);
             lines.add(0, line);
         }
 
         //add the corner and the value
         StringBuilder line = new StringBuilder();
         appendSpaces(line, spaces);
-        line.append("┌").append(current.value)
-                .append(getIndent(current));
+        line.append(BEFORE_LEFT_PIPE).append(currentNode.value)
+                .append(getIndent(currentNode));
 
         //add the line from behind
         lines.add(0, line);
 
+        int index = 0;
+
         //decide which direction to go
-        if (current.left != null && current.right == null) {
+        if (currentNode.left != null && currentNode.right == null) {
             //going outward left
-            branchOutLeft(current.left, lines, (current.left.right == null) ? 0 : current.left.right.size());
-        } else if (current.left == null && current.right != null) {
+            branchOutLeft(currentNode.left, lines);
+        } else if (currentNode.left == null && currentNode.right != null) {
             //going inward right
-            branchInRight(current, lines, (current.right.left == null) ? 0 : current.right.left.size());
-        } else if (current.left != null) {
+            branchInRight(currentNode.right, lines, index);
+        } else if (currentNode.left != null) {
             //go both ways
-            branchOutLeft(current.left, lines, (current.left.right == null) ? 0 : current.left.right.size());
-            branchInRight(current, lines, (current.right.left == null) ? 0 : current.right.left.size());
+            branchInRight(currentNode.right, lines, index);
+            branchOutLeft(currentNode.left, lines);
         }
     }
 
-    private void branchOutRight(Node current, List<StringBuilder> lines, int brakes) {
+    private void branchOutRight(Node currentNode, List<StringBuilder> lines){
         //align values correctly
         int spaces = lines.get(lines.size() - 1).length() - 1;
+        int brakes = (isLeaf(currentNode.left)) ? 0 : size(currentNode.left);
 
         //add brakes "│"
         for (int i = 0; i < brakes; i++) {
             StringBuilder line = new StringBuilder();
             appendSpaces(line, spaces);
-            line.append("│");
+            line.append(STRAIGHT_PIPE);
             lines.add(line);
         }
 
         //add the corner and the value
         StringBuilder line = new StringBuilder();
         appendSpaces(line, spaces);
-        line.append("└").append(current.value)
-                .append(getIndent(current));
+        line.append(BEFORE_RIGHT_PIPE).append(currentNode.value)
+                .append(getIndent(currentNode));
 
         //add the line in the front
         lines.add(line);
 
+        int index = lines.size() - 1;
+
         //decide which direction to go
-        if (current.left == null && current.right != null) {
+        if (currentNode.left == null && currentNode.right != null) {
             //go outward right
-            branchOutRight(current.right, lines, (current.right.left == null) ? 0 : current.right.left.size());
-        } else if (current.left != null && current.right == null) {
+            branchOutRight(currentNode.right, lines);
+        } else if (currentNode.left != null && currentNode.right == null) {
             //go inward left
-            branchInLeft(current, lines, (current.left.right == null) ? 0 : current.left.right.size());
-        } else if (current.left != null) {
+            branchInLeft(currentNode.left, lines, index);
+        } else if (currentNode.left != null) {
             //go both ways
-            branchOutRight(current.right, lines, (current.right.left == null) ? 0 : current.right.left.size());
-            branchInLeft(current, lines, (current.left.right == null) ? 0 : current.left.right.size());
+            branchInLeft(currentNode.left, lines,  index);
+            branchOutRight(currentNode.right, lines);
         }
     }
 
-    private void branchInLeft(Node previous, List<StringBuilder> lines, int brakes) {
-        int callValue = previous.value;
-        int leftValue = previous.left.value;
-        int index = -1;
+    private void branchInLeft(Node currentNode, List<StringBuilder> lines, int callIndex){
+        int index = callIndex;
+        int brakes = (isLeaf(currentNode.right)) ? 0 : size(currentNode.right);
+        int lengthToMatch = lines.get(index).length();
 
-
-        //find the line that called the function
-        for (int i = 0; i < lines.size(); i++) {
-            String trimedLine = lines.get(i).toString().trim();
-            if (!trimedLine.endsWith("│")) {
-                int value = extractValueFromLine(trimedLine);
-
-                if (value == callValue) {
-                    index = i;
-                }
-            }
-        }
-
-        int lineLengthToMatch = lines.get(index).length();
-
-        while (brakes != 0) {
+        //insert brakes "|"
+        for (int i = 0; i < brakes; i++) {
             index--;
 
-            StringBuilder lineBeforeCallValue = lines.get(index);
-            appendSpaces(lineBeforeCallValue, (lineLengthToMatch - lineBeforeCallValue.length() - 1));
-            lineBeforeCallValue.append("│");
-            lines.set(index, lineBeforeCallValue);
-
-            brakes--;
+            StringBuilder currentLine = lines.get(index);
+            appendSpaces(currentLine, (lengthToMatch - currentLine.length() - 1));
+            currentLine.append(STRAIGHT_PIPE);
+            lines.set(index, currentLine);
         }
 
         //line to add leftValue
         index--;
         StringBuilder line = lines.get(index);
-        appendSpaces(line, (lineLengthToMatch - line.length() - 1));
-        line.append("┌").append(leftValue).append(getIndent(previous.left));
+        appendSpaces(line, (lengthToMatch - line.length() - 1));
+        line.append(BEFORE_LEFT_PIPE).append(currentNode.value)
+                .append(getIndent(currentNode));
 
-        //add the updated line
-        lines.set(index, line);
 
         //decide which way to go
-        if (previous.left.right == null && previous.left.left != null) {
+        if (currentNode.right == null && currentNode.left != null) {
             //go in left
-            branchInLeft(previous.left, lines, (previous.left.left.right == null) ? 0 : previous.left.left.right.size());
-        } else if (previous.left.right != null && previous.left.left == null) {
+            branchInLeft(currentNode.left, lines, index);
+        } else if (currentNode.right != null && currentNode.left == null) {
             //go in right
-            branchInRight(previous.left, lines, (previous.left.right.left == null) ? 0 : previous.left.right.left.size());
-        } else if (previous.left.right != null) {
+            branchInRight(currentNode.right, lines, index);
+        } else if (currentNode.right != null) {
             //go both ways
-            branchInLeft(previous.left, lines, (previous.left.left.right == null) ? 0 : previous.left.left.right.size());
-            branchInRight(previous.left, lines, (previous.left.right.left == null) ? 0 : previous.left.right.left.size());
+            branchInLeft(currentNode.left, lines, index);
+            branchInRight(currentNode.right, lines, index);
         }
     }
 
-    private void branchInRight(Node previous, List<StringBuilder> lines, int brakes) {
-        int callValue = previous.value;
-        int rightValue = previous.right.value;
-        int index = -1;
+    private void branchInRight(Node currentNode, List<StringBuilder> lines, int callIndex){
+        int index = callIndex;
+        int brakes = (isLeaf(currentNode.left)) ? 0 : size(currentNode.left);
+        int lengthToMatch = lines.get(index).length();
 
-
-        //find the line that called the function
-        for (int i = 0; i < lines.size(); i++) {
-            String trimedLine = lines.get(i).toString().trim();
-            if (!trimedLine.endsWith("│")) {
-                int value = extractValueFromLine(trimedLine);
-
-                if (value == callValue) {
-                    index = i;
-                }
-            }
-        }
-
-        int lineLengthToMatch = lines.get(index).length();
-
-        while (brakes != 0) {
+        //insert brakes "|"
+        for (int i = 0; i < brakes; i++) {
             index++;
 
-            StringBuilder lineAfterCallValue = lines.get(index);
-            appendSpaces(lineAfterCallValue, (lineLengthToMatch - lineAfterCallValue.length() - 1));
-            lineAfterCallValue.append("│");
-            lines.set(index, lineAfterCallValue);
-
-            brakes--;
+            StringBuilder currentLine = lines.get(index);
+            appendSpaces(currentLine, (lengthToMatch - currentLine.length() - 1));
+            currentLine.append(STRAIGHT_PIPE);
+            lines.set(index, currentLine);
         }
 
-        //line to add rightValue
+        //line to add leftValue
         index++;
         StringBuilder line = lines.get(index);
-        appendSpaces(line, (lineLengthToMatch - line.length() - 1));
-        line.append("└").append(rightValue).append(getIndent(previous.right));
-
-        //add the updated line
-        lines.set(index, line);
+        appendSpaces(line, (lengthToMatch - line.length() - 1));
+        line.append(BEFORE_RIGHT_PIPE).append(currentNode.value)
+                .append(getIndent(currentNode));
 
         //decide which way to go
-        if (previous.right.left != null && previous.right.right == null) {
+        if (currentNode.left != null && currentNode.right == null) {
             //go in left
-            branchInLeft(previous.right, lines, (previous.right.left.right == null) ? 0 : previous.right.left.right.size());
-        } else if (previous.right.left == null && previous.right.right != null) {
+            branchInLeft(currentNode.left, lines, index);
+        } else if (currentNode.left == null && currentNode.right != null) {
             //go in right
-            branchInRight(previous.right, lines, (previous.right.right.left == null) ? 0 : previous.right.right.left.size());
-        } else if (previous.right.left != null) {
+            branchInRight(currentNode.right, lines, index);
+        } else if (currentNode.left != null) {
             //go both ways
-            branchInLeft(previous.right, lines, (previous.right.left.right == null) ? 0 : previous.right.left.right.size());
-            branchInRight(previous.right, lines, (previous.right.right.left == null) ? 0 : previous.right.right.left.size());
+            branchInLeft(currentNode.left, lines, index);
+            branchInRight(currentNode.right, lines, index);
         }
     }
 
     private String getIndent(Node node){
         if (node.left != null && node.right != null) {
             //goes both ways
-            return ("┤");
+            return (MIDDLE_PIPE);
         } else if (node.right == null && node.left!= null) {
             //go left-up
-            return ("┘");
+            return (AFTER_LEFT_PIPE);
         } else if (node.right != null) {
             //go right-down
-            return ("┐");
+            return (AFTER_RIGHT_PIPE);
         }
 
         return "";
-    }
-
-    private int extractValueFromLine(String line) {
-        //string has a from of ... "corner" + value + "corner"
-        //this function extracts the value
-
-        String corner1 = "┘";
-        String corner2 = "└";
-        String corner3 = "┐";
-        String corner4 = "┌";
-
-        //remove last corner
-        if (line.endsWith(corner1) || line.endsWith(corner2) || line.endsWith(corner3) || line.endsWith(corner4) || line.endsWith("┤")) {
-            line = line.substring(0, line.length() - 1);
-        }
-
-        //find the index of the left corner
-        //to isolate the value
-
-        int cornerIndex = -1;
-
-        if (line.contains(corner1)) {
-            cornerIndex = line.indexOf(corner1);
-        } else if (line.contains(corner2)) {
-            cornerIndex = line.indexOf(corner2);
-        } else if (line.contains(corner3)) {
-            cornerIndex = line.indexOf(corner3);
-        } else if (line.contains(corner4)) {
-            cornerIndex = line.indexOf(corner4);
-        }
-
-        //isolate value
-        line = line.substring(cornerIndex + 1);
-
-        return Integer.parseInt(line);
     }
 
     private String linesToString(List<StringBuilder> lines) {
@@ -318,21 +261,31 @@ public class PrintableTreeImpl implements PrintableTree {
         return current.size();
     }
 
+    private boolean isLeaf(Node node){
+        return node == null;
+    }
+
     public static void main(String[] args) {
         PrintableTreeImpl tree = new PrintableTreeImpl();
 
         int[] elements1 = {901, 292, 247, 997, 457, 468, 216, 82, 530, 524, 793, 952, 730, 764, 820, 460, 424};
 
         int[] elements2 = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, -1, -2, -3, -4, -5, -6, -7, -8, -9, -10};
+        int[] elements3 = {405, 704, 320, 152, 230, 44, 52, 979, 781, 71, 881, 515, 170, 928,
+                753, 437, 237, 522, 208, 9, 87, 157, 689, 5, 143, 345, 699, 386, 726, 650, 171, 229, 56, 615, 98};
 
-        for (int element : elements1) {
-            tree.add(element);
+
+        for (int elem : elements3) {
+            tree.add(elem);
         }
 
-        System.out.println(tree.toString(tree.root));
 
-        System.out.println(tree.size(tree.root));
+        long start = System.currentTimeMillis();
 
         System.out.println(tree.prettyPrint());
+
+        long end = System.currentTimeMillis();
+
+        System.out.println("it took " + (end - start) + " ms");
     }
 }

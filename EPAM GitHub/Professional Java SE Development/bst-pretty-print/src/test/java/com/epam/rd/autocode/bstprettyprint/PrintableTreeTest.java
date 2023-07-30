@@ -17,6 +17,29 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 public class PrintableTreeTest {
 
+    @Test
+    public void deleteMe(){
+        PrintableTree tree = PrintableTree.getInstance();
+
+        tree.add(123);
+        tree.add(11);
+        tree.add(200);
+        tree.add(1);
+        tree.add(100);
+        tree.add(150);
+        tree.add(2000);
+
+        String expectedPrettyTree = "      ┌1\n" +
+                "   ┌11┤\n" +
+                "   │  └100\n" +
+                "123┤\n" +
+                "   │   ┌150\n" +
+                "   └200┤\n" +
+                "       └2000\n";
+        assertEquals(expectedPrettyTree, tree.prettyPrint());
+
+    }
+
     @ParameterizedTest
     @MethodSource("testCases")
     public void test(String testCaseName, int[] elements, String prettyPrint) {

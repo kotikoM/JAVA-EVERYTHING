@@ -2,7 +2,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
 public class Node {
@@ -134,7 +133,7 @@ public class Node {
     }
 
     public boolean isLeftChild(Node parent, Node child) {
-        return (parent.getLeftNode() == child);
+        return (parent == null) || (parent.getLeftNode() == child);
     }
 
     public boolean isRightChild(Node parent, Node child) {
@@ -212,32 +211,6 @@ public class Node {
         } else {
             return List.of(this.leftNode, this.rightNode);
         }
-    }
-
-
-
-    //PRETTY PRINT METHODS------------------------------------------------------
-    public String prettyPrint(Node root) {
-        List<StringBuilder> lines = new ArrayList<>();
-        constructPrettyTree(root, 0, lines);
-        return String.join(System.lineSeparator(), lines);
-    }
-
-    private void constructPrettyTree(Node currentNode, int level, List<StringBuilder> lines){
-        StringBuilder line = new StringBuilder();
-
-        //append cosmetics
-        line.append("Lvl ")
-                .append(level)
-                .append(" ->");
-
-
-    }
-
-
-    private String getSpaces(Node currentNode){
-
-        return "  ";
     }
 
 }
