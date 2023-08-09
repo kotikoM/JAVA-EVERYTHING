@@ -27,8 +27,4 @@ public class Roman_to_Integer {
 
         return ans;
     }
-
-    public static void main(String[] args) {
-        System.out.println(romanToInt("III"));
-    }
 }
