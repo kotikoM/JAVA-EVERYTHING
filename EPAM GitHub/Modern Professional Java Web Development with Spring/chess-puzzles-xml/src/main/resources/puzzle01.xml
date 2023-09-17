@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="blackKing" class="com.epam.rd.autotasks.chesspuzzles.ChessPieceImpl">
+        <constructor-arg value="C"/>
+        <constructor-arg value="5"/>
+        <constructor-arg value="K"/>
+    </bean>
+
+    <bean id="blackRook1" class="com.epam.rd.autotasks.chesspuzzles.ChessPieceImpl">
+        <constructor-arg value="E"/>
+        <constructor-arg value="8"/>
+        <constructor-arg value="R"/>
+    </bean>
+
+    <bean id="blackBishop1" class="com.epam.rd.autotasks.chesspuzzles.ChessPieceImpl">
+        <constructor-arg value="D"/>
+        <constructor-arg value="6"/>
+        <constructor-arg value="B"/>
+    </bean>
+
+    <bean id="blackBishop2" class="com.epam.rd.autotasks.chesspuzzles.ChessPieceImpl">
+        <constructor-arg value="D"/>
+        <constructor-arg value="5"/>
+        <constructor-arg value="B"/>
+    </bean>
+
+    <bean id="pawn1" class="com.epam.rd.autotasks.chesspuzzles.ChessPieceImpl">
+        <constructor-arg value="F"/>
+        <constructor-arg value="6"/>
+        <constructor-arg value="P"/>
+    </bean>
+
+    <bean id="pawn2" class="com.epam.rd.autotasks.chesspuzzles.ChessPieceImpl">
+        <constructor-arg value="C"/>
+        <constructor-arg value="3"/>
+        <constructor-arg value="P"/>
+    </bean>
+
+    <bean id="pawn11" class="com.epam.rd.autotasks.chesspuzzles.ChessPieceImpl">
+        <constructor-arg value="D"/>
+        <constructor-arg value="2"/>
+        <constructor-arg value="p"/>
+    </bean>
+
+    <bean id="whiteKing" class="com.epam.rd.autotasks.chesspuzzles.ChessPieceImpl">
+        <constructor-arg value="B"/>
+        <constructor-arg value="7"/>
+        <constructor-arg value="k"/>
+    </bean>
+
+    <bean id="whiteBishop1" class="com.epam.rd.autotasks.chesspuzzles.ChessPieceImpl">
+        <constructor-arg value="E"/>
+        <constructor-arg value="2"/>
+        <constructor-arg value="b"/>
+    </bean>
+
+    <bean id="whiteKnight1" class="com.epam.rd.autotasks.chesspuzzles.ChessPieceImpl">
+        <constructor-arg value="C"/>
+        <constructor-arg value="6"/>
+        <constructor-arg value="n"/>
+    </bean>
+</beans>
