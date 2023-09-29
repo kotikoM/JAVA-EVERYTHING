@@ -1,3 +1,5 @@
+package sortArlgorithms;
+
 public class BubbleSort implements SortFunction {
 
     /**

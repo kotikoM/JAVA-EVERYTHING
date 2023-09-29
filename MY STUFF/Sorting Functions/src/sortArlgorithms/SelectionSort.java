@@ -1,3 +1,5 @@
+package sortArlgorithms;
+
 public class SelectionSort implements SortFunction {
 
     /**

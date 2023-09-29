@@ -1,4 +1,6 @@
-public class InsertionSort implements SortFunction{
+package sortArlgorithms;
+
+public class InsertionSort implements SortFunction {
 
     /**
      * The algorithm repeatedly selects the smallest (or largest)

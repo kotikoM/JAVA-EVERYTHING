@@ -1,4 +1,4 @@
-import java.util.Arrays;
+package sortArlgorithms;
 
 public class MergeSort implements SortFunction {
 

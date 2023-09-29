@@ -1,3 +1,5 @@
+import sortArlgorithms.*;
+
 import java.util.Arrays;
 
 public class Main {
